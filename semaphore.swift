@@ -1,38 +1,30 @@
 import Foundation
 
-let concurrentQueue = DispatchQueue(label: "com.example.concurrentQueue", attributes: .concurrent)
+let dispatchSemaphore = DispatchSemaphore(value: 1)
 var accountBalance = 1000
-let balanceSemaphore = DispatchSemaphore(value: 1)
 
 func withdraw(amount: Int) {
-  concurrentQueue.async {
-    balanceSemaphore.wait()
-    defer {
-      balanceSemaphore.signal()
+    dispatchSemaphore.wait()
+    defer{
+        dispatchSemaphore.signal()
     }
-    
-    if accountBalance >= amount { // Simulate delay for demonstration purposes
-      Thread.sleep(forTimeInterval: 1)
-      accountBalance -= amount
-      print("Withdrawal successful. Remaining balance: \(accountBalance)")
-    } else {
-      print("Insufficient funds")
-    }
-  }
+        if accountBalance >= amount {
+            //Thread.sleep(forTimeInterval: 1)
+            accountBalance -= amount
+            print("Withdrawal successful. Remaining balance: \(accountBalance)")
+        } else {
+            print("Insufficient funds")
+        }
 }
 
 func refillBalance(amount: Int) {
-  concurrentQueue.async {
-    balanceSemaphore.wait()
-    defer {
-      balanceSemaphore.signal()
+    dispatchSemaphore.wait()
+    defer{
+        dispatchSemaphore.signal()
     }
-    
-    // Simulate delay for demonstration purposes
-    Thread.sleep(forTimeInterval: 1)
-    accountBalance += amount
-    print("Refill successful. Remaining balance: \(accountBalance)")
-  }
+        //Thread.sleep(forTimeInterval: 1)
+        accountBalance += amount
+        print("Refill successful. Remaining balance: \(accountBalance)")
 }
 
 // Simulate multiple withdrawals happening concurrently
